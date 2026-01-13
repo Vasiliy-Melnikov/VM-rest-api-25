@@ -1,71 +1,57 @@
 package tests;
 
+import models.*;
 import org.junit.jupiter.api.Test;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import steps.ReqresSteps;
 
-public class ReqresApiTests extends TestBase {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ReqresApiTests {
+
+    private final ReqresSteps steps = new ReqresSteps();
 
     @Test
     void checkListUsersTest() {
-        given()
-                .when()
-                .get("/users?page=2")
-                .then()
-                .statusCode(200)
-                .body("total", is(12))
-                .body("data", hasSize(6));
+        ListUsersResponse response = steps.getUsers(2);
+
+        assertEquals(12, response.getTotal());
+        assertNotNull(response.getData());
+        assertEquals(6, response.getData().size());
     }
 
     @Test
     void createUserTest() {
-        String requestBody = "{ \"name\": \"morpheus\", \"job\": \"leader\" }";
+        CreateUserBody body = new CreateUserBody("morpheus", "leader");
 
-        given()
-                .body(requestBody)
-                .when()
-                .post("/users")
-                .then()
-                .statusCode(201)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"))
-                .body("id", notNullValue())
-                .body("createdAt", notNullValue());
+        CreateUserResponse response = steps.createUser(body);
+
+        assertEquals("morpheus", response.getName());
+        assertEquals("leader", response.getJob());
+        assertNotNull(response.getId());
+        assertNotNull(response.getCreatedAt());
     }
 
     @Test
     void updateUserTest() {
-        String requestBody = "{ \"name\": \"morpheus\", \"job\": \"zion resident\" }";
+        CreateUserBody body = new CreateUserBody("morpheus", "zion resident");
 
-        given()
-                .body(requestBody)
-                .when()
-                .put("/users/2")
-                .then()
-                .statusCode(200)
-                .body("job", is("zion resident"))
-                .body("updatedAt", notNullValue());
+        UpdateUserResponse response = steps.updateUser(2, body);
+
+        assertEquals("zion resident", response.getJob());
+        assertNotNull(response.getUpdatedAt());
     }
 
     @Test
     void deleteUserTest() {
-        given()
-                .when()
-                .delete("/users/2")
-                .then()
-                .statusCode(204);
+        steps.deleteUser(2);
     }
 
     @Test
     void unsuccessfulRegisterTest() {
-        String requestBody = "{ \"email\": \"sydney@fife\" }";
+        RegisterBody body = new RegisterBody("sydney@fife", null);
 
-        given()
-                .body(requestBody)
-                .when()
-                .post("/register")
-                .then()
-                .statusCode(400)
-                .body("error", is("Missing password"));
+        RegisterErrorResponse response = steps.unsuccessfulRegister(body);
+
+        assertEquals("Missing password", response.getError());
     }
 }
