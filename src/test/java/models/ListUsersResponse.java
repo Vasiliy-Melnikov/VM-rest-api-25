@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -9,9 +10,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ListUsersResponse {
     private Integer page;
-    private Integer per_page;
+
+    @JsonProperty("per_page")
+    private Integer perPage;
+
     private Integer total;
-    private Integer total_pages;
+
+    @JsonProperty("total_pages")
+    private Integer totalPages;
+
     private List<UserData> data;
 
     @Data
@@ -19,8 +26,13 @@ public class ListUsersResponse {
     public static class UserData {
         private Integer id;
         private String email;
-        private String first_name;
-        private String last_name;
+
+        @JsonProperty("first_name")
+        private String firstName;
+
+        @JsonProperty("last_name")
+        private String lastName;
+
         private String avatar;
     }
 }
