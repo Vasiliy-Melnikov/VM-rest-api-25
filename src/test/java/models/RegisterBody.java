@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterBody {
     private String email;
-    private String password; // для negative можно не задавать
-}
+    private String password;
